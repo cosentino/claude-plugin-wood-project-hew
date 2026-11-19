@@ -1,14 +1,22 @@
 {
-  "name": "falegnameria-locale",
-  "description": "Plugin locali per la falegnameria: progettazione con Hew e distinte di taglio.",
+  "name": "cosentino",
+  "description": "Plugin di Claude Code di Marcello Cosentino.",
   "owner": {
     "name": "Marcello Cosentino"
   },
   "plugins": [
     {
-      "name": "wood-project-hew",
-      "source": "./",
-      "description": "Progettare mobili in legno con Hew, con distinta di taglio ottimizzata."
+      "name": "hew-woodworking",
+      "source": "./plugins/hew-woodworking",
+      "description": "Progettare mobili in legno con Hew: modello 3D come codice, quote, pagina 3D navigabile anche da telefono, distinta di taglio ottimizzata e PDF per il rivenditore.",
+      "version": "0.2.0",
+      "license": "MIT",
+      "keywords": [
+        "hew",
+        "woodworking",
+        "cut list",
+        "plywood"
+      ]
     }
   ]
 }

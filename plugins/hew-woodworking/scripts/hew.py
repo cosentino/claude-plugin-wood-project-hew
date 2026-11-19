@@ -186,7 +186,7 @@ def pdf():
     if exe.endswith(".exe") and wsl():
         tmp_win = run(["cmd.exe", "/c", "echo %TEMP%"], cwd="/mnt/c").strip()
         tmp = subprocess.check_output(["wslpath", "-u", tmp_win], text=True).strip()
-        d = os.path.join(tmp, "wood-project-hew")
+        d = os.path.join(tmp, "hew-woodworking")
         os.makedirs(d, exist_ok=True)
         shutil.copy(src, os.path.join(d, "d.html"))
         win = lambda p: subprocess.check_output(["wslpath", "-w", p], text=True).strip()  # noqa: E731

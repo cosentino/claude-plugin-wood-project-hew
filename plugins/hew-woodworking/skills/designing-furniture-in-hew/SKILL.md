@@ -1,5 +1,5 @@
 ---
-name: wood-project-hew
+name: designing-furniture-in-hew
 description: Use when the user asks to create, recreate from drawings, modify or price a wood furniture/woodworking project in 3D with Hew (mobile, carrello, mensola, letto, armadio, scaffale), to see it on the phone or in a rotatable web page, to add dimensions (quote), or to get a cutting list (distinta di taglio) optimized on standard plywood sheets (multistrato, compensato) and a printable PDF for the panel seller.
 ---
 
