@@ -1,0 +1,16 @@
+{
+  "name": "wood-project-hew",
+  "version": "0.1.0",
+  "description": "Progettare mobili in legno con Hew: modello 3D da script, quote, pagina web navigabile, link per il telefono, distinta di taglio ottimizzata e PDF per il rivenditore.",
+  "author": {
+    "name": "Marcello Cosentino"
+  },
+  "keywords": [
+    "hew",
+    "falegnameria",
+    "distinta di taglio",
+    "multistrato",
+    "modello 3d"
+  ],
+  "repository": "https://github.com/cosentino/claude-plugin-wood-project-hew"
+}

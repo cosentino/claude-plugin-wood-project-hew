@@ -1,0 +1,456 @@
+<title>__TITOLO__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: banco da lavoro — palco 3D grande, comandi a portata di pollice sotto, misure come una distinta di taglio */
+:root {
+  --bg: #e9ecea;
+  --surface: #f7f8f6;
+  --stage: #dfe4e1;
+  --ink: #1d2626;
+  --muted: #5b6764;
+  --line: #c4ccc8;
+  --accent: #0f6a64;
+  --accent-ink: #ffffff;
+  --wood: #d9b77c;
+  --wood8: #c49a5c;
+  --wood-ink: #2b2014;
+  --edge: #2a3332;
+  --font-display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141a1a; --surface: #1c2423; --stage: #222b2a; --ink: #e6ecea; --muted: #9aa8a4;
+    --line: #34403e; --accent: #4fc2b7; --accent-ink: #0b1615; --wood: #b8925a; --wood8: #9c7845; --wood-ink: #1a130b; --edge: #0d1212;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141a1a; --surface: #1c2423; --stage: #222b2a; --ink: #e6ecea; --muted: #9aa8a4;
+  --line: #34403e; --accent: #4fc2b7; --accent-ink: #0b1615; --wood: #b8925a; --wood8: #9c7845; --wood-ink: #1a130b; --edge: #0d1212;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 40px;
+}
+.wrap { max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+header { display: flex; flex-direction: column; gap: 4px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(28px, 6vw, 44px); line-height: 1.05; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+.lede { margin: 0; color: var(--muted); max-width: 62ch; }
+
+.workbench { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+@media (min-width: 900px) { .workbench { grid-template-columns: minmax(0, 1.8fr) minmax(280px, 1fr); align-items: start; } }
+
+.stage {
+  position: relative; background: var(--stage); border: 1px solid var(--line); border-radius: var(--r);
+  aspect-ratio: 4 / 5; max-width: 100%; overflow: hidden;
+}
+@media (min-width: 600px) { .stage { aspect-ratio: 4 / 3; } }
+.stage canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+.stage canvas:active { cursor: grabbing; }
+.hint {
+  position: absolute; left: 10px; bottom: 10px; right: 10px; pointer-events: none;
+  font-size: 12px; color: var(--muted); font-family: var(--font-mono);
+}
+.loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-family: var(--font-mono); font-size: 13px; }
+.scale {
+  position: absolute; top: 10px; right: 10px; font-family: var(--font-mono); font-size: 12px; color: var(--muted);
+  background: color-mix(in srgb, var(--surface) 85%, transparent); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px;
+}
+
+.panel { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.ctl { display: flex; flex-direction: column; gap: 8px; }
+.ctl h2 { margin: 0; font-family: var(--font-mono); font-weight: 500; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.row { display: flex; flex-wrap: wrap; gap: 8px; }
+button {
+  font: inherit; font-size: 14px; font-weight: 500; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; min-height: 40px; cursor: pointer;
+}
+button:hover { border-color: var(--muted); }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.chip { display: inline-flex; align-items: center; gap: 8px; }
+.chip .sw { width: 10px; height: 10px; border-radius: 2px; background: var(--wood); }
+.chip[aria-pressed="false"] { color: var(--muted); text-decoration: line-through; }
+.chip[aria-pressed="false"] .sw { background: transparent; border: 1px solid var(--muted); }
+.chip[aria-pressed="true"] { background: var(--surface); color: var(--ink); border-color: var(--ink); }
+
+.picked {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px;
+  display: flex; flex-direction: column; gap: 2px; min-height: 76px;
+}
+.picked .name { font-family: var(--font-display); font-weight: 700; font-size: 17px; }
+.picked .dims { font-family: var(--font-mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.picked .empty { color: var(--muted); font-size: 14px; }
+
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font-family: var(--font-mono); font-weight: 500; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+td.mm { font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+ul.notes { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; color: var(--ink); }
+ul.notes li::marker { color: var(--accent); }
+.src { font-size: 13px; color: var(--muted); margin: 12px 0 0; }
+.cutlist { display: flex; flex-direction: column; gap: 16px; }
+.cutlist h2 { font-family: var(--font-display); font-weight: 700; font-size: 22px; margin: 0 0 6px; }
+.notes-wrap h2 { font-size: 18px; }
+td.code { font-family: var(--font-mono); font-weight: 500; white-space: nowrap; }
+.sheets { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+@media (min-width: 900px) { .sheets { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.sheetfig { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.sheetfig figcaption { font-size: 13px; color: var(--muted); font-family: var(--font-mono); }
+.sheetfig figcaption strong { color: var(--ink); font-family: var(--font-display); font-size: 15px; }
+.svgscroll { overflow-x: auto; }
+svg.cut { display: block; width: 100%; min-width: 560px; height: auto; }
+svg.cut .sheet-bg { fill: var(--stage); stroke: var(--muted); stroke-width: 4; stroke-dasharray: 18 12; }
+svg.cut .pc { fill: var(--wood); stroke: var(--edge); stroke-width: 4; }
+svg.cut .pc8 { fill: var(--wood8); }
+svg.cut .pc-box { fill: none; stroke: var(--muted); stroke-width: 3; stroke-dasharray: 10 8; }
+svg.cut .lab { fill: var(--wood-ink); font-family: var(--font-mono); font-size: 52px; text-anchor: middle; dominant-baseline: middle; }
+svg.cut .lab.sm { font-size: 44px; }
+svg.cut .cod { font-weight: 600; }
+svg.cut .pc-code { fill: var(--wood-ink); font-family: var(--font-mono); font-size: 52px; font-weight: 500; text-anchor: middle; dominant-baseline: middle; }
+svg.cut .pc-dim { fill: var(--wood-ink); font-family: var(--font-mono); font-size: 46px; text-anchor: middle; dominant-baseline: middle; }
+.quote-cost { display: flex; flex-direction: column; gap: 12px; }
+.quote-cost h2 { font-family: var(--font-display); font-weight: 700; font-size: 22px; margin: 0; }
+tr.tot td { font-weight: 600; border-top: 2px solid var(--ink); }
+.notes a { color: var(--accent); }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">__SOTTOTITOLO__</span>
+    <h1>__TITOLO__</h1>
+    <p class="lede">__DESCRIZIONE__ Ruota il modello, isola le parti e tocca un pezzo per leggerne le misure.</p>
+  </header>
+
+  <div class="workbench">
+    <div class="stage" id="stage">
+      <div class="loading" id="loading">Carico il modello…</div>
+      <span class="scale">ingombro __INGOMBRO__ mm</span>
+      <span class="hint" id="hint">Trascina per ruotare · pizzica o rotella per lo zoom · due dita per spostare · tocca un pezzo</span>
+    </div>
+
+    <div class="panel">
+      <div class="ctl">
+        <h2>Vista</h2>
+        <div class="row" id="views">
+          <button type="button" id="v-iso" data-view="iso" aria-pressed="true">3/4 fronte</button>
+          <button type="button" id="v-back" data-view="back" aria-pressed="false">3/4 retro</button>
+          <button type="button" id="v-front" data-view="front" aria-pressed="false">Fronte</button>
+          <button type="button" id="v-side" data-view="side" aria-pressed="false">Fianco</button>
+          <button type="button" id="v-top" data-view="top" aria-pressed="false">Alto</button>
+        </div>
+      </div>
+      <div class="ctl">
+        <h2>Parti visibili</h2>
+        <div class="row" id="groups"></div>
+      </div>
+__QUOTE_CTL__      <div class="ctl">
+        <h2>Montaggio</h2>
+        <div class="row">
+          <button type="button" id="explode" aria-pressed="false">Vista esplosa</button>
+        </div>
+      </div>
+      <div class="ctl">
+        <h2>Pezzo selezionato</h2>
+        <div class="picked" id="picked" aria-live="polite"><span class="empty">Tocca un pezzo del modello.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="cutlist" id="taglio">
+    <div class="cut-head">
+      <h2>Distinta di taglio</h2>
+      <p class="lede">__TAGLIO_LEDE__</p>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Cod.</th><th>Parte</th><th>Pz</th><th>Misure (mm)</th><th>Sp.</th><th>Pannello</th><th>Note</th></tr></thead>
+        <tbody>
+__RIGHE__
+        </tbody>
+      </table>
+    </div>
+    <div class="sheets">
+__FOGLI__
+    </div>
+__TAGLIO_NOTE__
+  </section>
+__SEZIONI__
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+(function () {
+  const GLB_B64 = "__GLB_BASE64__";
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const stage = document.getElementById("stage");
+  const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+  const CFG = __CONFIG_JSON__;
+  const center = new THREE.Vector3(...CFG.centro);
+  const RADIUS = CFG.raggio;
+  const GROUPS = CFG.gruppi.map((g, i) => ({ key: "g" + i, label: g.nome, names: new Set(g.pezzi), explode: g.esploso }));
+
+  // --- renderer, scena, camera ---
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  stage.prepend(renderer.domElement);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(35, 1, 0.05, 50);
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = !reduceMotion;
+  controls.dampingFactor = 0.08;
+  controls.minDistance = RADIUS * 0.5;
+  controls.maxDistance = RADIUS * 9;
+  controls.maxPolarAngle = Math.PI * 0.495;
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8a80, 0.75));
+  const sun = new THREE.DirectionalLight(0xffffff, 0.75);
+  sun.position.set(2.5, 4, 3);
+  scene.add(sun);
+  const fill = new THREE.DirectionalLight(0xffffff, 0.25);
+  fill.position.set(-3, 2, -2.5);
+  scene.add(fill);
+
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(RADIUS * 1.5, 64), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.06 }));
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = CFG.pavimento - 0.001;
+  scene.add(floor);
+
+  const edgeMat = new THREE.LineBasicMaterial({ color: 0x000000 });
+  function applyTheme() {
+    scene.background = new THREE.Color(css("--stage"));
+    edgeMat.color.set(css("--edge"));
+    if (typeof rebuildQuote === "function" && window.__quoteReady) rebuildQuote();
+  }
+  applyTheme();
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
+  new MutationObserver(applyTheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+  const VIEWS = {
+    iso: [1, 0.55, 1.35], back: [-1, 0.55, -1.35], front: [0, 0.12, 1], side: [1, 0.08, 0], top: [0, 1, 0.02],
+  };
+  function fitDistance() {
+    const vfov = THREE.MathUtils.degToRad(camera.fov);
+    const hfov = 2 * Math.atan(Math.tan(vfov / 2) * camera.aspect);
+    return (RADIUS / Math.sin(Math.min(vfov, hfov) / 2)) * 0.92;
+  }
+
+  let tween = null;
+  function goTo(name, instant) {
+    const dir = new THREE.Vector3(...VIEWS[name]).normalize();
+    const toPos = center.clone().add(dir.multiplyScalar(fitDistance()));
+    if (instant || reduceMotion) {
+      camera.position.copy(toPos); controls.target.copy(center); controls.update(); tween = null; return;
+    }
+    tween = { t: 0, fromPos: camera.position.clone(), fromTgt: controls.target.clone(), toPos, toTgt: center.clone() };
+  }
+  document.getElementById("views").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-view]");
+    if (!b) return;
+    document.querySelectorAll("#views button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    goTo(b.dataset.view);
+  });
+  controls.addEventListener("start", () => { tween = null; });
+
+  function resize() {
+    const w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  new ResizeObserver(resize).observe(stage);
+  resize();
+
+  // --- modello ---
+  const groupNodes = {}; GROUPS.forEach((g) => (groupNodes[g.key] = new THREE.Group()));
+  const pickables = [];
+  let selected = null;
+  const groupOf = (name) => GROUPS.find((g) => g.names.has(name)) || GROUPS[0];
+
+  function b64ToBuffer(b64) {
+    const bin = atob(b64); const out = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out.buffer;
+  }
+
+  new THREE.GLTFLoader().parse(b64ToBuffer(GLB_B64), "", (gltf) => {
+    const parts = gltf.scene.children.slice();
+    parts.forEach((mesh) => {
+      if (!mesh.isMesh) return;
+      const g = groupOf(mesh.name);
+      mesh.material = mesh.material.clone();
+      mesh.material.side = THREE.DoubleSide;
+      mesh.material.roughness = 0.85; mesh.material.metalness = 0;
+      mesh.userData.baseEmissive = mesh.material.emissive.clone();
+      const edges = new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry, 25), edgeMat);
+      mesh.add(edges);
+      groupNodes[g.key].add(mesh);
+      pickables.push(mesh);
+    });
+    GROUPS.forEach((g) => { groupNodes[g.key].userData.target = new THREE.Vector3(); scene.add(groupNodes[g.key]); });
+    document.getElementById("loading").hidden = true;
+    goTo("iso", true);
+  }, (err) => {
+    document.getElementById("loading").textContent = "Il modello non si è caricato. Ricarica la pagina.";
+    console.error(err);
+  });
+
+  // --- sezioni ---
+  const groupsRow = document.getElementById("groups");
+  GROUPS.forEach((g) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "chip"; b.id = "g-" + g.key; b.setAttribute("aria-pressed", "true");
+    b.innerHTML = '<span class="sw"></span>' + g.label;
+    b.addEventListener("click", () => {
+      const on = b.getAttribute("aria-pressed") !== "true";
+      b.setAttribute("aria-pressed", String(on));
+      groupNodes[g.key].visible = on;
+      if (!on && selected && groupOf(selected.name) === g) select(null);
+    });
+    groupsRow.appendChild(b);
+  });
+
+  // --- quote ---
+  const QUOTE = CFG.quote;
+  const v3 = (p) => new THREE.Vector3(p[0] / 1000, p[2] / 1000, -p[1] / 1000);
+  const quoteGroups = {};
+  const dimMat = new THREE.LineBasicMaterial({ color: 0x000000, depthTest: false, transparent: true });
+  const fmtMm = (n) => (Math.abs(n - Math.round(n)) < 0.05 ? String(Math.round(n)) : n.toFixed(1).replace(".", ","));
+  function labelSprite(text) {
+    const c = document.createElement("canvas");
+    const ctx = c.getContext("2d");
+    const font = "500 44px 'IBM Plex Mono', ui-monospace, monospace";
+    ctx.font = font;
+    const w = Math.ceil(ctx.measureText(text).width) + 28, h = 64;
+    c.width = w; c.height = h;
+    ctx.font = font;
+    ctx.fillStyle = css("--surface"); ctx.strokeStyle = css("--accent"); ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.roundRect ? ctx.roundRect(2, 2, w - 4, h - 4, 12) : ctx.rect(2, 2, w - 4, h - 4); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = css("--ink"); ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(text, w / 2, h / 2 + 2);
+    const tex = new THREE.CanvasTexture(c); tex.encoding = THREE.sRGBEncoding;
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthTest: false, transparent: true }));
+    const hh = 0.06; s.scale.set(hh * w / h, hh, 1); s.renderOrder = 20;
+    return s;
+  }
+  QUOTE.forEach((q) => { quoteGroups[q.tag] = new THREE.Group(); });
+  function rebuildQuote() {
+    Object.values(quoteGroups).forEach((g) => {
+      scene.remove(g);
+      g.traverse((o) => { if (o.isSprite) { o.material.map.dispose(); o.material.dispose(); } if (o.geometry) o.geometry.dispose(); });
+    });
+    Object.keys(quoteGroups).forEach((k) => (quoteGroups[k] = new THREE.Group()));
+    Object.entries(quoteGroups).forEach(([tag, g]) => {
+      scene.add(g);
+      const btn = document.querySelector('[data-quote="' + tag + '"]');
+      g.visible = !btn || btn.getAttribute("aria-pressed") === "true";
+    });
+    dimMat.color.set(css("--accent"));
+    QUOTE.forEach((q) => {
+      const g = quoteGroups[q.tag];
+      const A = v3(q.a), B = v3(q.b), O = v3(q.off);
+      const A2 = A.clone().add(O), B2 = B.clone().add(O);
+      const on = O.clone().normalize(), d = B2.clone().sub(A2).normalize();
+      const ext = on.clone().multiplyScalar(0.015);
+      const tick = d.clone().add(on).normalize().multiplyScalar(0.012);
+      const pts = [A, A2.clone().add(ext), B, B2.clone().add(ext), A2, B2,
+        A2.clone().sub(tick), A2.clone().add(tick), B2.clone().sub(tick), B2.clone().add(tick)];
+      const lines = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), dimMat);
+      lines.renderOrder = 19;
+      g.add(lines);
+      const lab = labelSprite(fmtMm(q.arrotonda ? Math.round(q.mm) : q.mm));
+      lab.position.copy(A2.clone().add(B2).multiplyScalar(0.5));
+      g.add(lab);
+    });
+  }
+  rebuildQuote();
+  window.__quoteReady = true;
+  document.fonts && document.fonts.ready.then(rebuildQuote);
+  document.querySelectorAll("[data-quote]").forEach((b) => b.addEventListener("click", () => {
+    const on = b.getAttribute("aria-pressed") !== "true";
+    b.setAttribute("aria-pressed", String(on));
+    quoteGroups[b.dataset.quote].visible = on;
+  }));
+
+  // --- vista esplosa ---
+  let exploded = false;
+  const explodeBtn = document.getElementById("explode");
+  explodeBtn.addEventListener("click", () => {
+    exploded = !exploded;
+    explodeBtn.setAttribute("aria-pressed", String(exploded));
+    GROUPS.forEach((g) => {
+      const t = groupNodes[g.key].userData.target;
+      if (exploded) t.set(...g.explode); else t.set(0, 0, 0);
+      if (reduceMotion) groupNodes[g.key].position.copy(t);
+    });
+  });
+
+  // --- selezione al tocco ---
+  const picked = document.getElementById("picked");
+  const fmt = (v) => Math.round(v * 1000).toLocaleString("it-IT");
+  function select(mesh) {
+    if (selected) selected.material.emissive.copy(selected.userData.baseEmissive);
+    selected = mesh;
+    if (!mesh) { picked.innerHTML = '<span class="empty">Tocca un pezzo del modello.</span>'; return; }
+    mesh.material.emissive.set(css("--accent")).multiplyScalar(0.45);
+    const box = new THREE.Box3().setFromObject(mesh);
+    const s = box.getSize(new THREE.Vector3());
+    const dims = [s.x, s.y, s.z].sort((a, b) => b - a).map(fmt).join(" × ");
+    picked.innerHTML = "";
+    const n = document.createElement("span"); n.className = "name"; n.textContent = mesh.name;
+    const d = document.createElement("span"); d.className = "dims"; d.textContent = "ingombro " + dims + " mm · " + groupOf(mesh.name).label;
+    picked.append(n, d);
+  }
+  const ray = new THREE.Raycaster(); const ndc = new THREE.Vector2();
+  let down = null;
+  renderer.domElement.addEventListener("pointerdown", (e) => { down = { x: e.clientX, y: e.clientY }; });
+  renderer.domElement.addEventListener("pointerup", (e) => {
+    if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) { down = null; return; }
+    down = null;
+    const r = renderer.domElement.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    const hit = ray.intersectObjects(pickables.filter((m) => m.parent.visible), false)[0];
+    select(hit ? hit.object : null);
+  });
+
+  // --- loop ---
+  const ease = (t) => 1 - Math.pow(1 - t, 3);
+  function frame() {
+    if (tween) {
+      tween.t = Math.min(1, tween.t + 0.045);
+      const k = ease(tween.t);
+      camera.position.lerpVectors(tween.fromPos, tween.toPos, k);
+      controls.target.lerpVectors(tween.fromTgt, tween.toTgt, k);
+      if (tween.t >= 1) tween = null;
+    }
+    GROUPS.forEach((g) => {
+      const node = groupNodes[g.key]; const t = node.userData.target;
+      if (t) node.position.lerp(t, 0.12);
+    });
+    controls.update();
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "hew": {
+      "command": "python3",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/hew.py", "mcp"]
+    },
+    "hew-live": {
+      "command": "python3",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/hew.py", "mcp", "--live"]
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "falegnameria-locale",
+  "description": "Plugin locali per la falegnameria: progettazione con Hew e distinte di taglio.",
+  "owner": {
+    "name": "Marcello Cosentino"
+  },
+  "plugins": [
+    {
+      "name": "wood-project-hew",
+      "source": "./",
+      "description": "Progettare mobili in legno con Hew, con distinta di taglio ottimizzata."
+    }
+  ]
+}
